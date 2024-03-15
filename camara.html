@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<style>
+    * {
+        font-size: 30px
+    }
+    div {
+        display: block;
+        margin: 10px;
+    }
+</style>
+<div class="display-cover">
+    <h2>条形码识别</h2>
+<p>
+    <div>
+      <label for="">点击进行拍照</label>
+        <input type="file" accept="image/*" capture="camera" id="cameraInput">
+    </div>
+    <div>
+        <img src="" id="image" alt="" width="300px" height="300px">
+    </div>
+    <div>
+        <button id="submitButton">识别</button>
+    </div>
+    <div id="result" style="font-size: 28px">
+
+
+    </div>
+
+    <script>
+        const cameraInput = document.getElementById('cameraInput');
+        const submitButton = document.getElementById('submitButton');
+
+        cameraInput.addEventListener('change', () => {
+            const file = cameraInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('image').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        submitButton.addEventListener('click', () => {
+            const file = cameraInput.files[0];
+            document.getElementById('result').textContent = "";
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const imageData = event.target.result;
+                    const response = await fetch('/rec', {
+                        method: 'POST',
+                        body: JSON.stringify({ image: imageData }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    document.getElementById('result').textContent = JSON.stringify(result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</p>
+<!--<p>-->
+<!--  <label for="">视频</label>-->
+<!--  <input type="file" accept="video/*" capture="camcorder">-->
+<!--</p>-->
+<!--<p>-->
+<!--  <label for="">录音</label>-->
+<!--  <input type="file" accept="audio/*" capture="microphone">-->
+<!--</p>-->
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
